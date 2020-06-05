@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Customer  = require('../models/customer');
+var User = require('../models/user');
 var mongoose  = require('mongoose');
 var jwt = require('jsonwebtoken');
 var bodyParser = require('body-parser');
@@ -66,4 +67,68 @@ router.post('/myorders',(req,res)=>{
     })
   }
 })
+router.delete('/:shopId',(req,res)=>{
+  var shop;
+  Customer.find({_id:req.params.shopId},(err,docs)=>{
+    if(err)
+      console.log(err);
+    else
+      shop=docs[0].ShopName;
+  })
+  Customer.findByIdAndRemove((req.params.shopId),(err,docs)=>{
+    if(err)
+    console.log(err);
+    else{
+      console.log(shop);
+      User.find({ShopName:shop},(err,docs)=>{
+        if(err)
+          console.log(err);
+        else{
+          if(docs.length==0)
+          return;
+          var user=docs[0]._id;
+          User.findByIdAndRemove(user,(err,docs)=>{
+            if(err)
+            console.log(err);
+            else
+            console.log(user);
+          })
+        }
+      })
+    }
+  });
+});
+router.put('/:shopId',(req,res)=>{
+  var shop;
+  Customer.find({_id:req.params.shopId},(err,docs)=>{
+    if(err)
+      console.log(err);
+    else{
+      shop=docs[0].ShopName;
+    }
+  })
+  Customer.findByIdAndUpdate((req.params.shopId),{ShopName:req.body.newname},(err,docs)=>{
+    if(err)
+    console.log(err);
+    else{
+      console.log(shop);
+      User.find({ShopName:shop},(err,docs)=>{
+        if(err)
+          console.log(err);
+        else{
+          if(docs.length==0)
+          return;
+          console.log(docs);
+          var user=docs[0]._id;
+          User.findByIdAndUpdate(user,{ShopName:req.body.newname},(err,docs)=>{
+            if(err)
+            console.log(err);
+            else
+            console.log(user);
+          })
+        }
+      })
+    }
+  });
+});
 module.exports = router;

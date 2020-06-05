@@ -40,7 +40,7 @@ router.post('/',async(req,res)=>{
       Price:req.body.Price
     })
     try {
-      const existingProduct = await Customer.findOne({Name:req.body.Name});
+      const existingProduct = await Product.findOne({Name:req.body.Name});
   
       if (existingProduct) {
         return console.log("Product already exists!");
@@ -56,5 +56,29 @@ router.post('/',async(req,res)=>{
     console.log(err);
   }
 })
-
+router.delete('/:productId',(req,res)=>{
+  Product.findByIdAndRemove((req.params.productId),(err,docs)=>{
+    if(err)
+    console.log(err);
+    else{
+      console.log(docs);
+    }
+  });
+});
+router.put('/name/:productId',(req,res)=>{
+  Product.findByIdAndUpdate((req.params.productId),{Name:req.body.name},(err,docs)=>{
+    if(err)
+    console.log(err);
+    else
+    console.log(docs);
+  })
+});
+router.put('/price/:productId',(req,res)=>{
+  Product.findByIdAndUpdate((req.params.productId),{Price:req.body.price},(err,docs)=>{
+    if(err)
+    console.log(err);
+    else
+    console.log(docs);
+  })
+})
 module.exports = router;
