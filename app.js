@@ -32,7 +32,11 @@ mongoose.connection.on('connected', function () {
 mongoose.connection.on('error', function (err) {
   console.log("Error while connecting to DB: " + err);
 });
-
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+ next();
+});
 app.use(cors());
 // ****** Body Parser **********
 app.use(bodyParser.urlencoded({
@@ -47,7 +51,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
